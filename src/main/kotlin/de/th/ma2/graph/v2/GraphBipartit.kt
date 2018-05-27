@@ -1,6 +1,7 @@
 package de.th.ma2.graph.v2
 
 import de.th.ma2.graph.v2.adjazenz.AdjazenzMatrix
+import de.th.ma2.graph.v2.adjazenz.RowIndex
 
 class GraphBipartit(val adjazenz: AdjazenzMatrix) {
     fun findMatching(): Matching {
@@ -21,7 +22,7 @@ class GraphBipartit(val adjazenz: AdjazenzMatrix) {
         return Matching(this)
     }
 
-    private fun findExtendingWay(row: Int, matching: Matching): ExtendingWay? {
+    private fun findExtendingWay(row: RowIndex, matching: Matching): ExtendingWay? {
         var way = findExtendingWaySimple(row, matching)
         if(!way.found()) {
             way = searchExtendedWayByTree(row, matching)
@@ -30,7 +31,7 @@ class GraphBipartit(val adjazenz: AdjazenzMatrix) {
         return way
     }
 
-    private fun findExtendingWaySimple(row: Int, matching: Matching): ExtendingWay? {
+    private fun findExtendingWaySimple(row: RowIndex, matching: Matching): ExtendingWay? {
         for (col in adjazenz.columns) {
             if(col.contains(row)
                 && !matching.containsCol(col.index)) {
@@ -41,7 +42,7 @@ class GraphBipartit(val adjazenz: AdjazenzMatrix) {
         return null
     }
 
-    private fun searchExtendedWayByTree(row: Int, matching: Matching): ExtendingWay? {
+    private fun searchExtendedWayByTree(row: RowIndex, matching: Matching): ExtendingWay? {
         val tree = ExtendingTree(row, adjazenz, matching)
         return tree.extendingWays.firstOrNull()
     }

@@ -73,7 +73,7 @@ class AdjazenzMatrixImpl: AdjazenzMatrix {
         data += newList
     }
 
-    override fun removeRow(row: Int) {
+    override fun removeRow(row: RowIndex) {
         data.removeAt(row)
         _rowNames.removeAt(row)
     }
@@ -85,21 +85,21 @@ class AdjazenzMatrixImpl: AdjazenzMatrix {
         }
     }
 
-    override fun removeCol(col: Int) {
+    override fun removeCol(col: ColIndex) {
         for(row in data) {
             row.removeAt(col)
         }
         _colNames.removeAt(col)
     }
 
-    override fun row(row: Int) = RowImpl(row)
+    override fun row(row: RowIndex) = RowImpl(row)
 
-    override fun column(col: Int) = ColumnImpl(col)
+    override fun column(col: ColIndex) = ColumnImpl(col)
 
     abstract inner class MatrixElement
         protected constructor(override val index: Int): Iterable<Int>, Row, Column {
 
-        override fun contains(col: Int): Boolean = this[col]
+        override fun contains(col: ColIndex): Boolean = this[col]
         override fun get(colName: String): Boolean = this[colName.toIndex()]
         override fun set(colName: String, value: Boolean) = set(colName.toIndex(), value)
         override fun contains(colName: String): Boolean = this[colName]
@@ -132,16 +132,16 @@ class AdjazenzMatrixImpl: AdjazenzMatrix {
     }
 
     // class not save to structural changes (adding or removing of rows)
-    inner class RowImpl(index: Int): MatrixElement(index), Row {
-        override operator fun get(col: Int) = data[index][col]
-        override fun set(col: Int, value: Boolean) { data[index][col] = value }
+    inner class RowImpl(index: RowIndex): MatrixElement(index), Row, Iterable<ColIndex> {
+        override operator fun get(col: ColIndex) = data[index][col]
+        override fun set(col: ColIndex, value: Boolean) { data[index][col] = value }
         override val indexNames = colNames
     }
 
     // class not save to structural changes (adding or removing of columns)
-    inner class ColumnImpl(index: Int): MatrixElement(index), de.th.ma2.graph.v2.adjazenz.Column {
-        override operator fun get(row: Int) = data[row][index]
-        override fun set(row: Int, value: Boolean) { data[row][index] = value }
+    inner class ColumnImpl(index: ColIndex): MatrixElement(index), Column, Iterable<RowIndex> {
+        override operator fun get(row: RowIndex) = data[row][index]
+        override fun set(row: RowIndex, value: Boolean) { data[row][index] = value }
         override val indexNames = rowNames
     }
 }

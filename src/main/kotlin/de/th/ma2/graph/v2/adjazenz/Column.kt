@@ -2,16 +2,16 @@ package de.th.ma2.graph.v2.adjazenz
 
 // *****************************************************************************************************************
 // utility class representing the data of 1 column of a matrix
-interface Column: Iterable<Int> {
-    val index: Int
+interface Column: Iterable<RowIndex> {
+    val index: ColIndex
 
-    operator fun get(row: Int): Boolean
+    operator fun get(row: RowIndex): Boolean
 
-    operator fun set(row: Int, value: Boolean)
+    operator fun set(row: RowIndex, value: Boolean)
 
     // *************************************************************************************************************
     // utility functions for the code to look more beautiful
-    fun contains(row: Int): Boolean = get(row)
+    fun contains(row: RowIndex): Boolean = get(row)
 
     operator fun get(rowName: String): Boolean = get(rowName.toIndex())
 
@@ -21,5 +21,5 @@ interface Column: Iterable<Int> {
 
     fun isPresent(): Boolean
 
-    fun String.toIndex(): Int
+    fun String.toIndex(): ColIndex
 }

@@ -2,6 +2,8 @@ package de.th.ma2.graph.v2
 
 import de.th.ma2.graph.v2.adjazenz.AdjazenzMatrix
 import de.th.ma2.graph.v2.adjazenz.AdjazenzMatrixImpl
+import de.th.ma2.graph.v2.adjazenz.ColIndex
+import de.th.ma2.graph.v2.adjazenz.RowIndex
 
 class Matching(val graph: GraphBipartit) {
     val adjazenz: AdjazenzMatrix = AdjazenzMatrixImpl()
@@ -11,25 +13,17 @@ class Matching(val graph: GraphBipartit) {
         graph.adjazenz.colNames.forEach { adjazenz.addCol(it) }
     }
 
-    fun containsCol(col: Int): Boolean {
+    fun containsCol(col: ColIndex): Boolean {
         return adjazenz.column(col).isPresent()
     }
 
     fun extend(way: ExtendingWay) {
-        var last: Int? = null
-        var add = false
-
-        for (index in way.indizes) {
-            if(last != null) {
-                if(add) {
-                    adjazenz[last][index] = add
-                } else {
-                    adjazenz[index][last] = add
-                }
-            }
-
-            last = index
-            add = !add
+        for(element in way) {
+            // element.isColElement meanns a connection row -> col (forward)
+            // element.isRowElement means a connection col -> row (backward)
+            // if it is a ColElement we need to add the connection
+            // otherwise we need to delete the connection
+            adjazenz[element.rowIndex][element.colIndex] = element.isColElement()
         }
     }
 
@@ -43,7 +37,7 @@ class Matching(val graph: GraphBipartit) {
     // *****************************************************************************************************************
     // utility functions for the code to look more beautiful
 
-    fun rowConnectedTo(col: Int): Int {
+    fun rowConnectedTo(col: ColIndex): RowIndex {
         return adjazenz.column(col)
                 // as there can only one row be connected we can simple return the first match
                 .first()
